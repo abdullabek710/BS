@@ -12,7 +12,6 @@ Long description of module's purpose
     'category': 'Custom',
     'version': '0.1',
     'depends': ['base', 'sale_management'],
-    'post_init_hook':'enable_credit_limit',
     'data': [],
     'application': True,
     'license': 'LGPL-3',
