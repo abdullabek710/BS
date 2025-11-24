@@ -65,8 +65,8 @@ jobs:
           echo "→ Restarting Odoo services..."
           sshpass -p "$SSHPASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "
             cd ~/dockerodoo
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose up -d
             sleep 3
           " || exit 1
           
