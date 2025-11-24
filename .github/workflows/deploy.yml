@@ -1,0 +1,71 @@
+name: Deploy Odoo Module
+
+on:
+  push:
+    branches: [ main ]
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Install dependencies
+          run: sudo apt-get update && sudo apt-get install -y sshpass rsync
+        
+        - name: Deploy modules to Odoo server
+          env:
+            SSHPASS: ${{ secrets.SERVER_PASS }}
+            SERVER_USER: ${{ secrets.SERVER_USER }}
+            SERVER_HOST: ${{ secrets.SERVER_IP }}
+
+          run: |
+            set -e
+
+            REMOTE_ADDONS_PATH="~/dockerodoo/odoo/custom-addons"
+
+            echo "🚀 Starting deployment..."
+            echo ""
+
+            APPS=$(find . -maxdepth 1 -type d -name "*" ! -name "." -exec test -f {}/__manifest__.py \; -print)
+
+            if [ -z "$APPS" ]; then
+              echo "❌ No apps found with __manifest__.py"
+              exit 1
+            fi
+
+            echo "→ Verifying remote addons directory..."
+            sshpass -p "$SSHPASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "
+              mkdir -p $REMOTE_ADDONS_PATH
+            " || exit 1
+
+            echo "→ Uploading modules..."
+
+            for APP in $APPS; do
+              APP_NAME=$(basename "$APP")
+              echo "  ✓ Uploading $APP_NAME..."
+              sshpass -p "$SSHPASS" rsync -avz --delete \
+                "$APP/" "$SERVER_USER@$SERVER_HOST:$REMOTE_ADDONS_PATH/$APP_NAME/" \
+                --exclude='__pycache__' \
+                --exclude='*.pyc' \
+                --exclude='.git' \
+                --exclude='.gitignore' > /dev/null 2>&1 || exit 1
+
+            done
+            echo "✅ All modules uploaded"
+            echo ""
+
+            echo "→ Restarting Odoo services..."
+            sshpass -p "$SSHPASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "
+              cd ~/dockerodoo
+              docker compose down
+              docker compose up -d
+              sleep 3
+            " || exit 1
+            
+            echo ""
+            echo "✅ Deployment complete!"
+            echo "🎉 All modules are now live"
+
+
+            
