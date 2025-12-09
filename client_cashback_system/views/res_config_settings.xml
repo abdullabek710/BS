@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_cashback_settings_form" model="ir.ui.view">
+            <field name="name">Cashback Settings</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='contacts_settings']" position="after">
+                    <div id="cashback_settings">
+                        <block title="Cashback" name="cashback_setting_container">
+                            <setting id="cashback_enable" string="Enable Cashback" help="Activate cashback functionality for your store">
+                                <field name="cashback_enabled"/>
+                            </setting>
+                            <setting id="cashback_percent_setting" invisible="not cashback_enabled" help="Enter the cashback percentage (e.g., 5 for 5%)">
+                                <label for="cashback_precent" string="Cashback Percentage" class="col-3 col-lg-3 o_light_label"/>
+                                <field name="cashback_precent" class="oe_inline"/>
+                                <span class="o_form_label">%</span>
+                            </setting>
+                            <setting id="cashback_redeem_days_setting" invisible="not cashback_enabled" help="Enter the redeem allowed days (every 90 days)">
+                                <label for="cashback_redeem_days" string="Cashback redeem days" class="col-3 col-lg-3 o_light_label"/>
+                                <field name="cashback_redeem_days" class="oe_inline"/>
+                                <span class="o_form_label">days</span>
+                            </setting>
+                        </block>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

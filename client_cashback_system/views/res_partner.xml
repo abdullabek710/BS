@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_partner_form_custom" model="ir.ui.view">
+            <field name="name">res.partner.form.custom</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='category_id']" position="after">
+                    <div class="o_row">
+                        <label for="cashback_precent" string="Cashback Percent" invisible="not cashback_enabled"/>
+                        <field name="cashback_precent"
+                               invisible="not cashback_enabled"
+                               required="cashback_enabled"
+                               class="o_field_integer oe_inline"
+                               style="width: 80px;"/>
+                        <span class="o_form_label" style="margin-left: 10px" invisible="not cashback_enabled">%</span>
+                    </div>
+                </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Cashback" name="cashback_tab" invisible="not cashback_enabled">
+                        <group>
+                            <group>
+                                <field name="cashback_balans" readonly="True" widget="monetary"/>
+                            </group>
+                            <group>
+                                <field name="accumulated_cashback" readonly="True" widget="monetary"/>
+                            </group>
+                        </group>
+
+                        <separator string="Cashback Transaction History"/>
+
+                        <field name="cashback_transaction_ids" readonly="True" nolabel="1">
+                            <list string="Cashback Transactions" decoration-success="status == 'settled'"
+                                  decoration-warning="status == 'pending_settlement'"
+                                  decoration-danger="status == 'reset'"
+                                  decoration-info="status == 'earned'">
+                                <field name="transaction_date" widget="date"/>
+                                <field name="invoice_id"/>
+                                <field name="invoice_amount" widget="monetary"/>
+                                <field name="cashback_percent" string="Cashback %"/>
+                                <field name="cashback_amount" widget="monetary"/>
+                                <field name="status" widget="badge"
+                                       decoration-success="status == 'settled'"
+                                       decoration-warning="status == 'pending_settlement'"
+                                       decoration-danger="status == 'reset'"
+                                       decoration-info="status == 'earned'"/>
+                                <field name="notes" optional="hide"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_cashback_end_month" model="ir.cron">
+            <field name="name">Process End of Month Cashback Settlement</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="code">model.process_end_of_month_cashback()</field>
+            <field name="state">code</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="nextcall">2025-12-31 23:59:00</field>
+            <field name="priority">1</field>
+        </record>
+    </data>
+</odoo>

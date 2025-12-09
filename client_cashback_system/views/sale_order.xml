@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Add button to Sales Order form -->
+        <record id="view_order_form_cashback_button" model="ir.ui.view">
+            <field name="name">sale.order.form.cashback</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_quotation_send']" position="before">
+                    <button name="action_open_cashback_wizard"
+                            type="object"
+                            string="🎁 Redeem Cashback"
+                            class="btn-primary"
+                            invisible="state not in ['draft', 'sent']"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Cashback Redemption Wizard Form -->
+        <record id="view_cashback_redemption_wizard_form" model="ir.ui.view">
+            <field name="name">cashback.redemption.wizard.form</field>
+            <field name="model">cashback.redemption.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Redeem Cashback">
+                    <field name="sale_order_id" invisible="1"/>
+                    <field name="partner_id" invisible="1"/>
+
+                    <!-- Information Section -->
+                    <field name="redemption_info" widget="html"/>
+
+                    <group>
+                        <group>
+                            <field name="last_redemption_date" readonly="1"/>
+                            <field name="can_redeem" readonly="1" widget="boolean"/>
+                        </group>
+                    </group>
+
+                    <separator string="Redemption Amount"/>
+
+                    <group>
+                        <field name="currency_id" invisible="True"/>
+                        <field name="redemption_amount"
+                               readonly="cashback_balance == 0 or not can_redeem"
+                               invisible="cashback_balance == 0" widget="monetary"/>
+                    </group>
+
+                    <footer>
+                        <button name="action_redeem_cashback"
+                                type="object"
+                                string="Redeem Cashback"
+                                class="btn-primary"
+                                invisible="not can_redeem or redemption_amount == 0"/>
+                        <button string="Cancel" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
